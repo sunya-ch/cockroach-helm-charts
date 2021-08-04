@@ -1,6 +1,6 @@
 image:
   repository: cockroachdb/cockroach
-  tag: v21.1.6
+  tag: v20.2.4
   pullPolicy: IfNotPresent
   credentials: {}
     # registry: docker.io
@@ -134,19 +134,6 @@ conf:
   # CockroachDB's port to listen to HTTP requests.
   http-port: 8080
 
-  # CockroachDB's data mount path.
-  path: cockroach-data
-
-  # CockroachDB's storage configuration https://www.cockroachlabs.com/docs/v21.1/cockroach-start.html#storage
-  # Uses --store flag
-  store:
-    enabled: false
-    # Should be empty or 'mem'
-    type:
-    # Required for type=mem. If type and size is empty - storage.persistentVolume.size is used
-    size:
-    # Arbitrary strings, separated by colons, specifying disk type or capability
-    attrs:
 
 statefulset:
   replicas: 3
@@ -154,7 +141,7 @@ statefulset:
     type: RollingUpdate
   podManagementPolicy: Parallel
   budget:
-    maxUnavailable: 1
+    maxUnavailable: 0
 
   # List of additional command-line arguments you want to pass to the
   # `cockroach start` command.
@@ -201,7 +188,9 @@ statefulset:
 
   # Node selection constraints for scheduling Pods of this StatefulSet.
   # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
-  nodeSelector: {}
+  nodeSelector: {
+    node.kubernetes.io/instance-type: bx2.16x64
+  }
 
   # PriorityClassName given to Pods of this StatefulSet
   # https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
@@ -220,33 +209,12 @@ statefulset:
   # Uncomment the following resources definitions or pass them from
   # command line to control the CPU and memory resources allocated
   # by Pods of this StatefulSet.
-  resources: {}
-    # limits:
-    #   cpu: 100m
-    #   memory: 512Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 512Mi
-
-  # Custom Liveness probe
-  # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-liveness-http-request
-  customLivenessProbe: {}
-    # httpGet:
-    #   path: /health
-    #   port: http
-    #   scheme: HTTPS
-    # initialDelaySeconds: 30
-    # periodSeconds: 5
-
-  # Custom Rediness probe
-  # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-readiness-probes
-  customReadinessProbe: {}
-    # httpGet:
-    #   path: /health
-    #   port: http
-    #   scheme: HTTPS
-    # initialDelaySeconds: 30
-    # periodSeconds: 5
+  resources: {
+    requests: {
+      cpu: "8000m",
+      memory: "20Gi"
+    }
+  }
 
 service:
   ports:
@@ -323,7 +291,9 @@ storage:
   persistentVolume:
     enabled: true
 
-    size: 100Gi
+    # size: 5400Gi
+    # size: 3200Gi
+    size: 1600Gi
 
     # If defined, then `storageClassName: <storageClass>`.
     # If set to "-", then `storageClassName: ""`, which disables dynamic
@@ -331,7 +301,10 @@ storage:
     # If undefined or empty (default), then no `storageClassName` spec is set,
     # so the default provisioner will be chosen (gp2 on AWS, standard on
     # GKE, AWS & OpenStack).
-    storageClass: ""
+
+    # storageClass: "ibmc-vpc-block-3iops-tier-large-jp-tok-1"
+    # storageClass: "ibmc-vpc-block-5iops-tier-large-jp-tok-1"
+    storageClass: "ibmc-vpc-block-10iops-tier-jp-tok-1"
 
     # Additional labels to apply to the created PersistentVolumeClaims.
     labels: {}
@@ -355,7 +328,9 @@ init:
 
   # Node selection constraints for scheduling the Pod of this Job.
   # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
-  nodeSelector: {}
+  nodeSelector: {
+    node.kubernetes.io/instance-type: bx2.4x16
+  }
 
   # Taints to be tolerated by the Pod of this Job.
   # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
@@ -394,18 +369,6 @@ tls:
     # Enable if the secret is a dedicated TLS.
     # TLS secrets are created by cert-mananger, for example.
     tlsSecret: false
-    # Use cert-manager to issue certificates for mTLS.
-    certManager: false
-    # Specify an Issuer or a ClusterIssuer to use, when issuing
-    # node and client certificates. The values correspond to the
-    # issuerRef specified in the certificate.
-    certManagerIssuer:
-      group: cert-manager.io
-      kind: Issuer
-      name: cockroachdb
-    # Enable if you run cert-manager >=1.0 on K8s <=1.15 with legacy CRDs
-    # Legacy CRDs only support cert-manager.io/v1 API Versions
-    useCertManagerV1CRDs: false
 
   init:
     # Image to use for requesting TLS certificates.
@@ -440,10 +403,3 @@ networkPolicy:
       # - namespaceSelector:
       #     matchLabels:
       #       project: my-project
-
-# To put the admin interface behind Identity Aware Proxy (IAP) on Google Cloud Platform
-iap:
-  enabled: false
-  # Create Google Cloud OAuth credentials and set client id and secret
-  # clientId:
-  # clientSecret:
