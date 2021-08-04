@@ -45,9 +45,9 @@ Create the name of the ServiceAccount to use.
 Return the appropriate apiVersion for NetworkPolicy.
 */}}
 {{- define "cockroachdb.networkPolicy.apiVersion" -}}
-{{- if semverCompare ">=1.4-0, <=1.7-0" .Capabilities.KubeVersion.Version -}}
+{{- if semverCompare ">=1.4-0, <=1.7-0" .Capabilities.KubeVersion.GitVersion -}}
     {{- print "extensions/v1beta1" -}}
-{{- else if semverCompare "^1.7-0" .Capabilities.KubeVersion.Version -}}
+{{- else if semverCompare "^1.7-0" .Capabilities.KubeVersion.GitVersion -}}
     {{- print "networking.k8s.io/v1" -}}
 {{- end -}}
 {{- end -}}
@@ -56,25 +56,9 @@ Return the appropriate apiVersion for NetworkPolicy.
 Return the appropriate apiVersion for StatefulSets
 */}}
 {{- define "cockroachdb.statefulset.apiVersion" -}}
-{{- if semverCompare "<1.12-0" .Capabilities.KubeVersion.Version -}}
+{{- if semverCompare "<1.12-0" .Capabilities.KubeVersion.GitVersion -}}
     {{- print "apps/v1beta1" -}}
 {{- else -}}
     {{- print "apps/v1" -}}
 {{- end -}}
-{{- end -}}
-
-{{/*
-Return CockroachDB store expression
-*/}}
-{{- define "cockroachdb.conf.store" -}}
-{{- $isInMemory := eq (.Values.conf.store.type | toString) "mem" -}}
-{{- $persistentSize := empty .Values.conf.store.size | ternary .Values.storage.persistentVolume.size .Values.conf.store.size -}}
-
-{{- $store := dict -}}
-{{- $_ := set $store "type" ($isInMemory | ternary "type=mem" "") -}}
-{{- $_ := set $store "path" ($isInMemory | ternary "" (print "path=" .Values.conf.path)) -}}
-{{- $_ := set $store "size" (print "size=" ($isInMemory | ternary .Values.conf.store.size $persistentSize)) -}}
-{{- $_ := set $store "attrs" (empty .Values.conf.store.attrs | ternary "" (print "attrs=" .Values.conf.store.attrs)) -}}
-
-{{ compact (values $store) | join "," }}
 {{- end -}}

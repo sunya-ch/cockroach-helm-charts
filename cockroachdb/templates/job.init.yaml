@@ -15,9 +15,6 @@ metadata:
   {{- with .Values.labels }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  annotations:
-    helm.sh/hook: post-install,post-upgrade
-    helm.sh/hook-delete-policy: hook-succeeded,before-hook-creation
 spec:
   template:
     metadata:
@@ -33,16 +30,16 @@ spec:
     spec:
       restartPolicy: OnFailure
       terminationGracePeriodSeconds: 0
-    {{- if or .Values.image.credentials (and .Values.tls.enabled .Values.tls.init.image.credentials (not .Values.tls.certs.provided) (not .Values.tls.certs.certManager)) }}
+    {{- if or .Values.image.credentials (and .Values.tls.enabled .Values.tls.init.image.credentials (not .Values.tls.certs.provided)) }}
       imagePullSecrets:
       {{- if .Values.image.credentials }}
         - name: {{ template "cockroachdb.fullname" . }}.db.registry
       {{- end }}
-      {{- if and .Values.tls.enabled .Values.tls.init.image.credentials (not .Values.tls.certs.provided) (not .Values.tls.certs.certManager) }}
+      {{- if and .Values.tls.enabled .Values.tls.init.image.credentials (not .Values.tls.certs.provided) }}
         - name: {{ template "cockroachdb.fullname" . }}.init-certs.registry
       {{- end }}
     {{- end }}
-    {{- if and .Values.tls.enabled (not .Values.tls.certs.provided) (not .Values.tls.certs.certManager) }}
+    {{- if and .Values.tls.enabled (not .Values.tls.certs.provided)}}
       serviceAccountName: {{ template "cockroachdb.tls.serviceAccount.name" . }}
       initContainers:
         # The init-certs container sends a CSR (certificate signing request) to
@@ -75,27 +72,6 @@ spec:
           volumeMounts:
             - name: client-certs
               mountPath: /cockroach-certs/
-    {{- end }}
-    {{- if or .Values.tls.certs.certManager (and .Values.tls.enabled (.Values.tls.certs.provided))}}
-      serviceAccountName: {{ template "cockroachdb.tls.serviceAccount.name" . }}
-      initContainers:
-        - name: copy-certs
-          image: "busybox"
-          imagePullPolicy: {{ .Values.tls.init.image.pullPolicy | quote }}
-          command:
-            - /bin/sh
-            - -c
-            - "cp -f /certs/* /cockroach-certs/; chmod 0400 /cockroach-certs/*.key"
-          env:
-            - name: POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-          volumeMounts:
-            - name: client-certs
-              mountPath: /cockroach-certs/
-            - name: certs-secret
-              mountPath: /certs/
     {{- end }}
     {{- with .Values.init.affinity }}
       affinity: {{- toYaml . | nindent 8 }}
@@ -153,10 +129,8 @@ spec:
     {{- if .Values.tls.enabled }}
       volumes:
         - name: client-certs
-          emptyDir: {}
-          {{- if or .Values.tls.certs.provided .Values.tls.certs.certManager }}
-        - name: certs-secret
-          {{- if or .Values.tls.certs.tlsSecret .Values.tls.certs.certManager }}
+          {{- if .Values.tls.certs.provided }}
+          {{- if .Values.tls.certs.tlsSecret }}
           projected:
             sources:
             - secret:
@@ -176,6 +150,8 @@ spec:
             secretName: {{ .Values.tls.certs.clientRootSecret }}
             defaultMode: 0400
           {{- end }}
+          {{- else }}
+          emptyDir: {}
           {{- end }}
     {{- end }}
 {{- end }}
