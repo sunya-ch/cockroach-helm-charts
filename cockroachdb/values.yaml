@@ -175,16 +175,16 @@ statefulset:
   # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   # You may either toggle options below for default anti-affinity rules,
   # or specify the whole set of anti-affinity rules instead of them.
-  podAntiAffinity:
-    # The topologyKey to be used.
-    # Can be used to spread across different nodes, AZs, regions etc.
-    topologyKey: kubernetes.io/hostname
-    # Type of anti-affinity rules: either `soft`, `hard` or empty value (which
-    # disables anti-affinity rules).
-    type: soft
-    # Weight for `soft` anti-affinity rules.
-    # Does not apply for other anti-affinity types.
-    weight: 100
+  podAntiAffinity: {}
+    # # The topologyKey to be used.
+    # # Can be used to spread across different nodes, AZs, regions etc.
+    # topologyKey: kubernetes.io/hostname
+    # # Type of anti-affinity rules: either `soft`, `hard` or empty value (which
+    # # disables anti-affinity rules).
+    # type: soft
+    # # Weight for `soft` anti-affinity rules.
+    # # Does not apply for other anti-affinity types.
+    # weight: 100
 
   # Node selection constraints for scheduling Pods of this StatefulSet.
   # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
