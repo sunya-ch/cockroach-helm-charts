@@ -189,7 +189,7 @@ statefulset:
   # Node selection constraints for scheduling Pods of this StatefulSet.
   # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
   nodeSelector: {
-    node.kubernetes.io/instance-type: bx2.16x64
+    node.kubernetes.io/instance-type: cx2.16x32
   }
 
   # PriorityClassName given to Pods of this StatefulSet
@@ -291,7 +291,7 @@ storage:
   persistentVolume:
     enabled: true
 
-    # size: 5400Gi
+    # size: 2500Gi
     # size: 3200Gi
     size: 1600Gi
 
@@ -304,7 +304,7 @@ storage:
 
     # storageClass: "ibmc-vpc-block-3iops-tier-large-jp-tok-1"
     # storageClass: "ibmc-vpc-block-5iops-tier-large-jp-tok-1"
-    storageClass: "ibmc-vpc-block-10iops-tier-jp-tok-1"
+    storageClass: "ibmc-vpc-block-10iops-tier-jp-osa-1"
 
     # Additional labels to apply to the created PersistentVolumeClaims.
     labels: {}
@@ -329,7 +329,7 @@ init:
   # Node selection constraints for scheduling the Pod of this Job.
   # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
   nodeSelector: {
-    node.kubernetes.io/instance-type: bx2.4x16
+    node.kubernetes.io/instance-type: bx2.8x32
   }
 
   # Taints to be tolerated by the Pod of this Job.
