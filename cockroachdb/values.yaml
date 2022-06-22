@@ -1,5 +1,5 @@
 image:
-  repository: cockroachdb/cockroach
+  repository: docker.io/cockroachdb/cockroach
   tag: v20.2.4
   pullPolicy: IfNotPresent
   credentials: {}

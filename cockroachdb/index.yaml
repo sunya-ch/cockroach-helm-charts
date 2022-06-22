@@ -3,9 +3,9 @@ entries:
   cockroachdb:
   - apiVersion: v1
     appVersion: 20.2.3
-    created: "2022-06-22T17:29:40.238489+09:00"
+    created: "2022-06-22T17:30:17.735594+09:00"
     description: CockroachDB is a scalable, survivable, strongly-consistent SQL database.
-    digest: d0ba691747a1252ec133c7c5dcb4c2d7b7663acbd82a0c723c7e918e356cfcd4
+    digest: 543d8f3ef819ea59fb6229d27bb338c106811764718562f27935884af32c758b
     home: https://www.cockroachlabs.com
     icon: https://raw.githubusercontent.com/cockroachdb/cockroach/master/docs/media/cockroach_db.png
     maintainers:
@@ -17,4 +17,4 @@ entries:
     urls:
     - https://raw.githubusercontent.com/sunya-ch/cockroach-helm-charts/master/cockroachdb/cockroachdb-5.0.3.tgz
     version: 5.0.3
-generated: "2022-06-22T17:29:40.234797+09:00"
+generated: "2022-06-22T17:30:17.731682+09:00"
