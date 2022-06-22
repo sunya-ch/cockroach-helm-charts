@@ -188,9 +188,7 @@ statefulset:
 
   # Node selection constraints for scheduling Pods of this StatefulSet.
   # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
-  nodeSelector: {
-    node.kubernetes.io/instance-type: cx2.16x32
-  }
+  nodeSelector: {}
 
   # PriorityClassName given to Pods of this StatefulSet
   # https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
@@ -328,9 +326,7 @@ init:
 
   # Node selection constraints for scheduling the Pod of this Job.
   # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
-  nodeSelector: {
-    node.kubernetes.io/instance-type: bx2.8x32
-  }
+  nodeSelector: {}
 
   # Taints to be tolerated by the Pod of this Job.
   # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
